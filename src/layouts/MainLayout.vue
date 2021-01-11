@@ -17,7 +17,7 @@ export default {
   name: 'MainLayout',
   data () {
     return {
-      leftDrawerOpen: false
+      authKey: 'gfgrkaJ83razF1eatts3ekuYROg4JICi'
     }
   }
 }
