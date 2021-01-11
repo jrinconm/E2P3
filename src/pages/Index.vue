@@ -1,5 +1,20 @@
 <template>
   <q-page class="">
+    <div class="q-pa-md q-gutter-sm">
+      <q-dialog v-model="alert">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">Alert</div>
+          </q-card-section>
+          <q-card-section class="q-pt-none">
+            {{ mensaje }}
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn flat label="OK" color="primary" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </div>
     <div class="row justify-around">
       <div class="col-1" />
       <div class="col-2 q-pa-sm q-mt-md">
@@ -88,6 +103,8 @@ export default {
   name: "PageIndex",
   data() {
     return {
+      alert: false,
+      mensaje: "",
       search: "",
       dateMin: "",
       dateMax: "",
@@ -100,18 +117,38 @@ export default {
   },
   methods: {
     buscar: function() {
-      this.comprobar();
-      this.consultar();
+      if (this.comprobar()) {
+        this.consultar();
+      }
     },
-    comprobar: function() {},
+    comprobar: function() {
+      const campos = [
+        {clave: "search",texto: "El campo buscar no puede estar vacio"},
+      {clave: "dateMin",texto: "La fecha minima no puede estar vacía"},
+      {clave: "dateMax",texto: "La fecha maxima no puede estar vacía"},
+      {clave: "orden",texto: "Debes elegir un tipo de ordenación"}
+      ];
+      // Me buscaba primero por orden y prefiero que sea por search
+      campos.reverse().forEach(campo => {
+        if (!this.[campo.clave]) {
+          this.mensaje = campo.texto;
+          this.alert = true;
+          return false;
+        } else {
+          console.log(campo);
+        }
+      });
+      this.alert = true;
+      return false;
+    },
     vaciaNoticias: function() {
       this.noticias.splice(0);
     },
     consultar: function() {
       // Creo datos de prueba
-      this.dateMin = "20190101";
+      /* this.dateMin = "20190101";
       this.dateMax = "20200101";
-      this.search = "road";
+      this.search = "road"; */
       // Definimos el comportamiento de Axios
       this.$axios
         .get(this.urlApi, {
