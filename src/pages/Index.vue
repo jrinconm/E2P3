@@ -136,10 +136,13 @@ export default {
           // Hacemos cosas con la respuesta
           const documentos = response.data.response.docs;
           for (const documento in documentos) {
-            console.log(
-              documento.section_name + ":" + documento.hheadline.main
-            );
+            const articulo = {
+              seccion: documentos[documento].section_name,
+              titular: documentos[documento].headline.main
+            };
+            this.noticias.push(articulo);
           }
+          console.log(this.noticias);
         })
         // En caso de error, mostramos el error para facilitar depuración
         .catch(error => {
