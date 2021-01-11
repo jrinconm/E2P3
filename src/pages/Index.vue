@@ -67,23 +67,14 @@
       <div class="col-2" />
       <div class="col-8">
         <q-list bordered separator>
-          <q-item clickable v-ripple>
-            <q-item-section>Single line item</q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple>
-            <q-item-section>
-              <q-item-label>Item with caption</q-item-label>
-              <q-item-label caption>Caption</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple>
-            <q-item-section>
-              <q-item-label overline>OVERLINE</q-item-label>
-              <q-item-label>Item with caption</q-item-label>
-            </q-item-section>
-          </q-item>
+          <template v-for="(noticia, indice) in noticias">
+            <q-item :key="indice" clickable v-ripple>
+              <q-item-section>
+                <q-item-label>{{ noticia.titular }}</q-item-label>
+                <q-item-label caption>{{ noticia.seccion }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </template>
         </q-list>
       </div>
       <div class="col-2" />
@@ -135,6 +126,8 @@ export default {
         .then(response => {
           // Hacemos cosas con la respuesta
           const documentos = response.data.response.docs;
+          // Vaciamos la lista de noticias
+          this.vaciaNoticias();
           for (const documento in documentos) {
             const articulo = {
               seccion: documentos[documento].section_name,
@@ -142,7 +135,6 @@ export default {
             };
             this.noticias.push(articulo);
           }
-          console.log(this.noticias);
         })
         // En caso de error, mostramos el error para facilitar depuración
         .catch(error => {
