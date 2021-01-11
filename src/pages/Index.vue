@@ -84,7 +84,7 @@
         <q-list bordered separator>
           <template v-for="(noticia, indice) in noticias">
             <q-item :key="indice" clickable v-ripple>
-              <q-item-section>
+              <q-item-section @click="visitar(noticia.url)">
                 <q-item-label>{{ noticia.titular }}</q-item-label>
                 <q-item-label caption>{{ noticia.seccion }}</q-item-label>
               </q-item-section>
@@ -98,7 +98,7 @@
 </template>
 
 <script>
-// import axios from "axios";
+import { openURL } from 'quasar'
 export default {
   name: "PageIndex",
   data() {
@@ -116,12 +116,19 @@ export default {
     };
   },
   methods: {
+    visitar: function(url){
+      openURL(url)
+    },
     buscar: function() {
       if (this.comprobar()) {
+        console.log("Comprobar correcto")
         this.consultar();
+      } else {
+        console.log("Comprobar mal")
       }
     },
     comprobar: function() {
+      let error = false;
       const campos = [
         {clave: "search",texto: "El campo buscar no puede estar vacio"},
       {clave: "dateMin",texto: "La fecha minima no puede estar vacía"},
@@ -133,13 +140,13 @@ export default {
         if (!this.[campo.clave]) {
           this.mensaje = campo.texto;
           this.alert = true;
+          error = true;
           return false;
-        } else {
-          console.log(campo);
         }
       });
-      this.alert = true;
-      return false;
+      if(!error){
+        return true
+      }
     },
     vaciaNoticias: function() {
       this.noticias.splice(0);
@@ -166,11 +173,14 @@ export default {
           // Vaciamos la lista de noticias
           this.vaciaNoticias();
           for (const documento in documentos) {
+            console.log(documentos[documento]);
             const articulo = {
               seccion: documentos[documento].section_name,
-              titular: documentos[documento].headline.main
+              titular: documentos[documento].headline.main,
+              url: documentos[documento].web_url
             };
             this.noticias.push(articulo);
+            console.log(this.noticias)
           }
         })
         // En caso de error, mostramos el error para facilitar depuración
