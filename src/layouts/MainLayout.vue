@@ -14,11 +14,9 @@
 </template>
 <script>
 export default {
-  name: 'MainLayout',
-  data () {
-    return {
-      authKey: 'gfgrkaJ83razF1eatts3ekuYROg4JICi'
-    }
+  name: "MainLayout",
+  data() {
+    return {};
   }
-}
+};
 </script>
