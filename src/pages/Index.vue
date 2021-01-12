@@ -141,10 +141,10 @@ export default {
     },
     buscar: function() {
       if (this.comprobar()) {
-        console.log("Comprobar correcto")
         this.consultar();
       } else {
-        console.log("Comprobar mal")
+        /* No lo ejecuto ya
+        console.log("Comprobar mal") */
       }
     },
     comprobar: function() {
@@ -155,6 +155,29 @@ export default {
       {clave: "dateMax",texto: "La fecha maxima no puede estar vacía"},
       {clave: "orden",texto: "Debes elegir un tipo de ordenación"}
       ];
+      // Defino el patron regexp de 8 numeros
+      const patronFecha = /^[0-9]{8}$/;
+      // Compruebo la fecha minima
+      if(!patronFecha.test(this.dateMin)){
+          this.mensaje = "La fecha mínima de la noticia no sigue el patrón YYYYMMDD"
+          this.alert = true;
+          error = true;
+          return false;
+      }
+      // Compruebo la fecha maxima, es lo mismo que la anterior, pero no me merece la pena hacer una funcion
+      if(!patronFecha.test(this.dateMax)){
+          this.mensaje = "La fecha máxima de la noticia no sigue el patrón YYYYMMDD"
+          this.alert = true;
+          error = true;
+          return false;
+      }
+      // Compruebo que una sea mayor que la otra
+      if(this.dateMin>this.dateMax){
+          this.mensaje = "La fecha minima no puede ser superior a la fecha maxima"
+          this.alert = true;
+          error = true;
+          return false;
+      }
       // Me buscaba primero por orden y prefiero que sea por search
       campos.reverse().forEach(campo => {
         if (!this.[campo.clave]) {
