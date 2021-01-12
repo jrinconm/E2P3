@@ -1,5 +1,6 @@
 <template>
   <q-page class="">
+    <!-- Mensaje de alerta -->
     <div class="q-pa-md q-gutter-sm">
       <q-dialog v-model="alert">
         <q-card>
@@ -15,73 +16,87 @@
         </q-card>
       </q-dialog>
     </div>
+    <!-- Barra de entrada -->
     <div class="row justify-around">
       <div class="col-1" />
       <div class="col-2 q-pa-sm q-mt-md">
-        <q-input v-model="search" filled type="text" hint="Buscar">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
+        <div class="row">
+          <q-input v-model="search" filled type="text" hint="Buscar">
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input
+            v-model="dateMin"
+            filled
+            type="text"
+            placeholder="YYYYMMDD"
+            mask="########"
+            hint="Fecha mínima de la noticia"
+            maxlength="8"
+          >
+            <template v-slot:prepend>
+              <q-icon name="event" />
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-input
+            v-model="dateMax"
+            filled
+            type="text"
+            placeholder="YYYYMMDD"
+            mask="########"
+            hint="Fecha máxima"
+            maxlength="8"
+          >
+            <template v-slot:prepend>
+              <q-icon name="event" />
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          <q-select
+            class="col-12"
+            label="Ordenar"
+            transition-show="flip-up"
+            transition-hide="flip-down"
+            filled
+            v-model="orden"
+            :options="options"
+          />
+        </div>
+        <div class="row q-pa-sm">
+          <q-btn
+            @click="buscar"
+            class="glossy"
+            icon="search"
+            icon-right="send"
+            rounded
+            color="deep-orange"
+            label="Buscar"
+          />
+        </div>
       </div>
-      <div class="col-2 q-pa-sm q-mt-md">
-        <q-input
-          v-model="dateMin"
-          filled
-          type="text"
-          placeholder="YYYYMMDD"
-          mask="########"
-          hint="Fecha mínima de la noticia"
-          maxlength="8"
-        >
-          <template v-slot:prepend>
-            <q-icon name="event" />
-          </template>
-        </q-input>
-      </div>
-      <div class="col-2 q-pa-sm q-mt-md">
-        <q-input
-          v-model="dateMax"
-          filled
-          type="text"
-          placeholder="YYYYMMDD"
-          mask="########"
-          hint="Fecha máxima"
-          maxlength="8"
-        >
-          <template v-slot:prepend>
-            <q-icon name="event" />
-          </template>
-        </q-input>
-      </div>
-      <div class="col-2 q-pa-sm q-mt-sm">
-        <q-select
-          class="col-2 q-pa-sm"
-          label="Ordenar"
-          transition-show="flip-up"
-          transition-hide="flip-down"
-          filled
-          v-model="orden"
-          :options="options"
-        />
-      </div>
-      <div class="col-2 q-pa-sm q-mt-lg">
-        <q-btn
-          @click="buscar"
-          class="glossy"
-          icon="search"
-          icon-right="send"
-          rounded
-          color="deep-orange"
-          label="Buscar"
-        />
-      </div>
-      <div class="col-1" />
-    </div>
-    <div class="row justify-around">
-      <div class="col-2" />
-      <div class="col-8">
+      <!-- Parte 2 de la pantalla panel grande -->
+      <div class="col-7 q-ml-sm q-mr-md">
         <q-list bordered separator>
+          <q-item>
+            <q-item-section>
+              <q-item-label>Listado de noticias</q-item-label>
+              <q-item-label caption
+                >Pulse en una noticia para visitar</q-item-label
+              >
+            </q-item-section>
+
+            <q-item-section side top>
+              <q-item-label caption>
+                {{ cantidadnoticias }} noticias</q-item-label
+              >
+            </q-item-section>
+          </q-item>
           <template v-for="(noticia, indice) in noticias">
             <q-item :key="indice" clickable v-ripple>
               <q-item-section @click="visitar(noticia.url)">
@@ -92,7 +107,7 @@
           </template>
         </q-list>
       </div>
-      <div class="col-2" />
+      <div class="col-1" />
     </div>
   </q-page>
 </template>
@@ -114,6 +129,11 @@ export default {
       authKey: "gfgrkaJ83razF1eatts3ekuYROg4JICi",
       noticias: []
     };
+  },
+  computed: {
+    cantidadnoticias: function (){
+      return Object.keys(this.noticias).length
+    }
   },
   methods: {
     visitar: function(url){
