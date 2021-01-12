@@ -8,6 +8,7 @@
             <div class="text-h6">Alert</div>
           </q-card-section>
           <q-card-section class="q-pt-none">
+            <!-- Este mensaje lo obtengo al generar el error en la funcion-->
             {{ mensaje }}
           </q-card-section>
           <q-card-actions align="right">
@@ -28,6 +29,7 @@
           </q-input>
         </div>
         <div class="row">
+          <!-- La mascara obliga a poner 8 numeros-->
           <q-input
             v-model="dateMin"
             filled
@@ -86,11 +88,11 @@
           <q-item>
             <q-item-section>
               <q-item-label>Listado de noticias</q-item-label>
+              <!-- Aquí me he tirado ya el moco -->
               <q-item-label caption
                 >Pulse en una noticia para visitar</q-item-label
               >
             </q-item-section>
-
             <q-item-section side top>
               <q-item-label caption>
                 {{ cantidadnoticias }} noticias</q-item-label
@@ -106,6 +108,7 @@
             </q-item>
           </template>
         </q-list>
+        <!-- Ya que he sacado las paginas de las noticias... -->
         <div class="q-pa-lg flex flex-center">
           <q-pagination
             v-show="cantidadnoticias"
@@ -134,8 +137,11 @@ export default {
     return {
       alert: false,
       mensaje: "",
+      // Hits y pagina es para buscar más de las primeras 10 noticias
+      // Hay un maximo de 1000 noticias
       hits: 0,
       pagina: 0,
+      // Los campos necesarios
       search: "",
       dateMin: "",
       dateMax: "",
@@ -147,23 +153,29 @@ export default {
     }
   },
   computed: {
+    // Obtengo la cantidad de noticias de la respuesta
     cantidadnoticias: function (){
       return this.hits
     },
+    // Son 10 noticias por pagina, hasta un maximo de 100 paginas
     maxpaginas: function (){
-      return (this.hits/10 > 10 ? 10 : this.hits/10)
+      return (this.hits/10 > 100 ? 100 : this.hits/10)
     },
   },
+  // Vigilo cuando cambian pagina
   watch: {
     pagina: function(val) {
       this.pagina = val;
       this.consultar()
       }
     },
+    // Al hacer click en la noticia abre el navegador
   methods: {
     visitar: function(url){
       openURL(url)
     },
+    // No es necesaria, pero me sirve para depurar
+    // Dependiendo la comprobacion realiza la consulta
     buscar: function() {
       if (this.comprobar()) {
         this.consultar();
@@ -172,6 +184,7 @@ export default {
         console.log("Comprobar mal") */
       }
     },
+    // Realiza las comprobaciones necesarias
     comprobar: function() {
       let error = false;
       const campos = [
@@ -212,13 +225,16 @@ export default {
           return false;
         }
       });
+      // Si no hay errores, devuelvo true
       if(!error){
         return true
       }
     },
+    // Limpia el array de noticias
     vaciaNoticias: function() {
       this.noticias.splice(0);
     },
+    // Realiza la consulta y la parsea al array de noticias
     consultar: function() {
       // Creo datos de prueba
       /* this.dateMin = "20190101";
@@ -228,10 +244,12 @@ export default {
       this.$axios
         .get(this.urlApi, {
           params: {
+            // Los parametros necesarios
             "api-key": this.authKey,
             begin_date: this.dateMin,
             end_date: this.dateMax,
             q: this.search,
+            // Este es un parametro extra
             page: this.pagina,
             sort: this.orden === "primero más modernas" ? "newest" : "oldest"
           }
@@ -242,8 +260,8 @@ export default {
           const documentos = response.data.response.docs;
           // Vaciamos la lista de noticias
           this.vaciaNoticias();
+          // Y la rellenamos con los datos nuevos
           for (const documento in documentos) {
-            console.log(documentos[documento]);
             const articulo = {
               seccion: documentos[documento].section_name,
               titular: documentos[documento].headline.main,
