@@ -114,6 +114,7 @@
             v-show="cantidadnoticias"
             v-model="pagina"
             :max="maxpaginas"
+            :input="true"
             :direction-links="true"
             :boundary-links="true"
             icon-first="skip_previous"
