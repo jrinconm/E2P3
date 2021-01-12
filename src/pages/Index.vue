@@ -106,6 +106,20 @@
             </q-item>
           </template>
         </q-list>
+        <div class="q-pa-lg flex flex-center">
+          <q-pagination
+            v-show="cantidadnoticias"
+            v-model="pagina"
+            :max="maxpaginas"
+            :direction-links="true"
+            :boundary-links="true"
+            icon-first="skip_previous"
+            icon-last="skip_next"
+            icon-prev="fast_rewind"
+            icon-next="fast_forward"
+          >
+          </q-pagination>
+        </div>
       </div>
       <div class="col-1" />
     </div>
@@ -120,6 +134,8 @@ export default {
     return {
       alert: false,
       mensaje: "",
+      hits: 0,
+      pagina: 0,
       search: "",
       dateMin: "",
       dateMax: "",
@@ -128,13 +144,22 @@ export default {
       urlApi: "https://api.nytimes.com/svc/search/v2/articlesearch.json",
       authKey: "gfgrkaJ83razF1eatts3ekuYROg4JICi",
       noticias: []
-    };
+    }
   },
   computed: {
     cantidadnoticias: function (){
-      return Object.keys(this.noticias).length
-    }
+      return this.hits
+    },
+    maxpaginas: function (){
+      return (this.hits/10 > 10 ? 10 : this.hits/10)
+    },
   },
+  watch: {
+    pagina: function(val) {
+      this.pagina = val;
+      this.consultar()
+      }
+    },
   methods: {
     visitar: function(url){
       openURL(url)
@@ -155,8 +180,8 @@ export default {
       {clave: "dateMax",texto: "La fecha maxima no puede estar vacía"},
       {clave: "orden",texto: "Debes elegir un tipo de ordenación"}
       ];
-      // Defino el patron regexp de 8 numeros
-      const patronFecha = /^[0-9]{8}$/;
+      // Defino el patron regexp de 8 numeros como en la api
+      const patronFecha = /^\d{8}$/;
       // Compruebo la fecha minima
       if(!patronFecha.test(this.dateMin)){
           this.mensaje = "La fecha mínima de la noticia no sigue el patrón YYYYMMDD"
@@ -207,10 +232,12 @@ export default {
             begin_date: this.dateMin,
             end_date: this.dateMax,
             q: this.search,
+            page: this.pagina,
             sort: this.orden === "primero más modernas" ? "newest" : "oldest"
           }
         })
         .then(response => {
+          this.hits = response.data.response.meta.hits;
           // Hacemos cosas con la respuesta
           const documentos = response.data.response.docs;
           // Vaciamos la lista de noticias
@@ -223,7 +250,6 @@ export default {
               url: documentos[documento].web_url
             };
             this.noticias.push(articulo);
-            console.log(this.noticias)
           }
         })
         // En caso de error, mostramos el error para facilitar depuración
