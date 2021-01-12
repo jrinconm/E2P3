@@ -209,7 +209,7 @@ export default {
           error = true;
           return false;
       }
-      // Compruebo que una sea mayor que la otra
+      // Compruebo que una sea mayor que la otra, aunque sean strings, sirve igual
       if(this.dateMin>this.dateMax){
           this.mensaje = "La fecha minima no puede ser superior a la fecha maxima"
           this.alert = true;
